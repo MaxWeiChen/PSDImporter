@@ -80,7 +80,8 @@ namespace subjectnerdagreement.psdexport
 		public static Sprite CreateSprite(PsdExportSettings settings, int layerIndex)
 		{
 			var layer = settings.Psd.Layers[layerIndex];
-			Texture2D tex = CreateTexture(layer);
+			var layerSetting = settings.layerSettings[layerIndex];
+			Texture2D tex = CreateTexture(layer, layerSetting);
 			if (tex == null)
 				return null;
 			Sprite sprite = SaveAsset(settings, tex, layerIndex);
@@ -88,19 +89,27 @@ namespace subjectnerdagreement.psdexport
 			return sprite;
 		}
 
-		private static Texture2D CreateTexture(Layer layer)
+		private static Texture2D CreateTexture(Layer layer, PsdExportSettings.LayerSetting setting)
 		{
-			if ((int)layer.Rect.width == 0 || (int)layer.Rect.height == 0)
+			if (setting.cutAlpha &&
+				((int)layer.Rect.width == 0 || (int)layer.Rect.height == 0) )
 				return null;
 
-			// For possible clip to document functionality
-			//int fileWidth = psd.ColumnCount;
-			//int fileHeight = psd.RowCount;
+			int textureWidth = (int)layer.Rect.width;
+			int textureHeight = (int)layer.Rect.height;
 
-			//int textureWidth = (int) layer.Rect.width;
-			//int textureHeight = (int) layer.Rect.height;
+			if(setting.cutAlpha)
+			{
+				textureWidth = (int)layer.Rect.width;
+				textureHeight = (int)layer.Rect.height;
+			}
+			else
+			{
+				textureWidth = layer.PsdFile.ColumnCount;
+				textureHeight = layer.PsdFile.RowCount;
+			}
 
-			Texture2D tex = new Texture2D((int)layer.Rect.width, (int)layer.Rect.height, TextureFormat.RGBA32, true);
+			Texture2D tex = new Texture2D(textureWidth, textureHeight, TextureFormat.RGBA32, true);
 			Color32[] pixels = new Color32[tex.width * tex.height];
 
 			Channel red = (from l in layer.Channels where l.ID == 0 select l).First();
@@ -108,22 +117,70 @@ namespace subjectnerdagreement.psdexport
 			Channel blue = (from l in layer.Channels where l.ID == 2 select l).First();
 			Channel alpha = layer.AlphaChannel;
 
-			for (int i = 0; i < pixels.Length; i++)
+			if(setting.cutAlpha)
 			{
-				byte r = red.ImageData[i];
-				byte g = green.ImageData[i];
-				byte b = blue.ImageData[i];
-				byte a = 255;
+				for (int i = 0; i < pixels.Length; i++)
+				{
+					byte r = 0;
+					if(i < red.ImageData.Length)
+					{
+						r = red.ImageData[i];
+					}
 
-				if (alpha != null)
-					a = alpha.ImageData[i];
+					byte g = 0;
+					if(i < green.ImageData.Length)
+					{
+						g = green.ImageData[i];
+					}
 
-				int mod = i % tex.width;
-				int n = ((tex.width - mod - 1) + i) - mod;
-				pixels[pixels.Length - n - 1] = new Color32(r, g, b, a);
+					byte b = 0;
+					if(i < blue.ImageData.Length)
+					{
+						b = blue.ImageData[i];
+					}
+
+					byte a = 255;
+					if (alpha != null && i < alpha.ImageData.Length)
+					{
+						a = alpha.ImageData[i];
+					}
+
+					int mod = i % tex.width;
+					int n = ((tex.width - mod - 1) + i) - mod;
+					pixels[pixels.Length - n - 1] = new Color32(r, g, b, a);
+				}
+
+				tex.SetPixels32(pixels);
+			}
+			else
+			{
+				for (int i = 0; i < pixels.Length; i++)
+				{
+					pixels[i] = Color.clear;
+				}
+				tex.SetPixels32(pixels);
+
+				textureWidth = (int)layer.Rect.width;
+				textureHeight = (int)layer.Rect.height;
+				Color32[] originPixels = new Color32[textureWidth * textureHeight];
+				for (int i = 0; i < originPixels.Length; i++)
+				{
+					byte r = red.ImageData[i];
+					byte g = green.ImageData[i];
+					byte b = blue.ImageData[i];
+					byte a = 255;
+					if (alpha != null)
+					{
+						a = alpha.ImageData[i];
+					}
+
+					int mod = i % textureWidth;
+					int n = ((textureWidth - mod - 1) + i) - mod;
+					originPixels[originPixels.Length - n - 1] = new Color32(r, g, b, a);
+				}
+				tex.SetPixels32((int)layer.Rect.x, (int)layer.Rect.y, textureWidth, textureHeight, originPixels);
 			}
 
-			tex.SetPixels32(pixels);
 			tex.Apply();
 
 			return tex;
