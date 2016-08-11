@@ -154,6 +154,14 @@ namespace subjectnerdagreement.psdexport
 				TextureImporter sprImporter = (TextureImporter)AssetImporter.GetAtPath(sprPath);
 				TextureImporterSettings sprSettings = new TextureImporterSettings();
 				sprImporter.ReadTextureSettings(sprSettings);
+				if(constructor.ResetTextureSetting(spriteObject, sprImporter, sprSettings))
+				{
+					sprImporter.SetTextureSettings(sprSettings);
+
+					EditorUtility.SetDirty(spriteObject);
+					AssetDatabase.WriteImportSettingsIfDirty(sprPath);
+					AssetDatabase.ImportAsset(sprPath, ImportAssetOptions.ForceUpdate);
+				}
 				sprImporter = null;
 
 				// Add components to the sprite object for the visuals

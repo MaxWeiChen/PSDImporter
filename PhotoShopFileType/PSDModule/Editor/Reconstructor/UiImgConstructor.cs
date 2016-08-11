@@ -23,6 +23,11 @@ namespace subjectnerdagreement.psdexport
 			return go;
 		}
 
+		public bool ResetTextureSetting(GameObject imageObject, TextureImporter impoter, TextureImporterSettings setting)
+		{
+			return false;
+		}
+
 		public void AddComponents(int layerIndex, GameObject imageObject, Sprite sprite, TextureImporterSettings settings)
 		{
 			var uiImg = imageObject.AddComponent<Image>();

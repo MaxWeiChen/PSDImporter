@@ -38,6 +38,11 @@ namespace subjectnerdagreement.psdexport
 			return GOFactory(name, parent);
 		}
 
+		public bool ResetTextureSetting(GameObject imageObject, TextureImporter impoter, TextureImporterSettings setting)
+		{
+			return false;
+		}
+
 		public void AddComponents(int layerIndex, GameObject imageObject, Sprite sprite, TextureImporterSettings settings)
 		{
 			var spr = imageObject.AddComponent<SpriteRenderer>();

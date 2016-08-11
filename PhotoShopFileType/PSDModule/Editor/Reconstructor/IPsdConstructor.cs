@@ -26,6 +26,8 @@ namespace subjectnerdagreement.psdexport
 		/// <returns></returns>
 		GameObject CreateGameObject(string name, GameObject parent);
 
+		bool ResetTextureSetting(GameObject imageObject, TextureImporter impoter, TextureImporterSettings setting);
+
 		/// <summary>
 		/// Add the components that make up an image
 		/// </summary>
