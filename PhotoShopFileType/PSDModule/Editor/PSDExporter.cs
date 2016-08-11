@@ -160,9 +160,9 @@ namespace subjectnerdagreement.psdexport
 				}
 				tex.SetPixels32(pixels);
 
-				textureWidth = (int)layer.Rect.width;
-				textureHeight = (int)layer.Rect.height;
-				Color32[] originPixels = new Color32[textureWidth * textureHeight];
+				var originWidth = (int)layer.Rect.width;
+				var originHeight = (int)layer.Rect.height;
+				Color32[] originPixels = new Color32[originWidth * originHeight];
 				for (int i = 0; i < originPixels.Length; i++)
 				{
 					byte r = red.ImageData[i];
@@ -174,11 +174,11 @@ namespace subjectnerdagreement.psdexport
 						a = alpha.ImageData[i];
 					}
 
-					int mod = i % textureWidth;
-					int n = ((textureWidth - mod - 1) + i) - mod;
+					int mod = i % originWidth;
+					int n = ((originWidth - mod - 1) + i) - mod;
 					originPixels[originPixels.Length - n - 1] = new Color32(r, g, b, a);
 				}
-				tex.SetPixels32((int)layer.Rect.x, (int)layer.Rect.y, textureWidth, textureHeight, originPixels);
+				tex.SetPixels32((int)layer.Rect.x, textureHeight - ((int)layer.Rect.y + originHeight), originWidth, originHeight, originPixels);
 			}
 
 			tex.Apply();
