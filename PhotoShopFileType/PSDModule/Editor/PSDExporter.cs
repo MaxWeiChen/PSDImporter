@@ -91,14 +91,14 @@ namespace subjectnerdagreement.psdexport
 
 		private static Texture2D CreateTexture(Layer layer, PsdExportSettings.LayerSetting setting)
 		{
-			if(setting.cutAlpha &&
+			if(setting.npot &&
 			   ((int)layer.Rect.width == 0 || (int)layer.Rect.height == 0))
 				return null;
 
 			int textureWidth = (int)layer.Rect.width;
 			int textureHeight = (int)layer.Rect.height;
 
-			if(setting.cutAlpha)
+			if(setting.npot)
 			{
 				textureWidth = (int)layer.Rect.width;
 				textureHeight = (int)layer.Rect.height;
@@ -123,7 +123,7 @@ namespace subjectnerdagreement.psdexport
 			                select l).First();
 			Channel alpha = layer.AlphaChannel;
 
-			if(setting.cutAlpha)
+			if(setting.npot)
 			{
 				for(int i = 0; i < pixels.Length; i++)
 				{
@@ -213,13 +213,20 @@ namespace subjectnerdagreement.psdexport
 			// Setup scaling variables
 			float pixelsToUnits = settings.PixelsToUnitSize;
 
+			PsdExportSettings.LayerSetting layerSetting = settings.layerSettings[layer];
+
 			// Apply global scaling, if any
 			if(settings.ScaleBy > 0)
 			{
-				tex = ScaleTextureByMipmap(tex, settings.ScaleBy);
+				if(layerSetting.scaleByMosaic)
+				{
+					tex = ScaleTextureByMosaic(tex, settings.ScaleBy);
+				}
+				else
+				{
+					tex = ScaleTextureByMipmap(tex, settings.ScaleBy);
+				}
 			}
-
-			PsdExportSettings.LayerSetting layerSetting = settings.layerSettings[layer];
 
 			// Then scale by layer scale
 			if(layerSetting.scaleBy != ScaleDown.Default)
@@ -237,7 +244,14 @@ namespace subjectnerdagreement.psdexport
 				}
 
 				// Apply scaling
-				tex = ScaleTextureByMipmap(tex, scaleLevel);
+				if(layerSetting.scaleByMosaic)
+				{
+					tex = ScaleTextureByMosaic(tex, scaleLevel);
+				}
+				else
+				{
+					tex = ScaleTextureByMipmap(tex, scaleLevel);
+				}
 			}
 
 			byte[] buf = tex.EncodeToPNG();
@@ -300,7 +314,7 @@ namespace subjectnerdagreement.psdexport
 			int height = Mathf.RoundToInt(tex.height / (mipLevel * 2));
 
 			Texture2D resized = new Texture2D(width, height);
-			Color[] reColors = new Color[width*height];
+			Color32[] reColors = new Color32[width*height];
 
 			int resizeY = 0;
 			int resizeX = 0;
@@ -310,7 +324,6 @@ namespace subjectnerdagreement.psdexport
 				for(int widthOffset = 0; widthOffset < tex.width; widthOffset += effectWidth)
 				{
 					Dictionary<Color,int> dic = new Dictionary<Color, int>();
-//					Color[] pixels = new Color[effectWidth * effectWidth];
 
 					for(int x = widthOffset; (x < widthOffset + effectWidth && x < tex.width); x++)
 					{
@@ -328,7 +341,7 @@ namespace subjectnerdagreement.psdexport
 
 					if(resizeX < resized.width && resizeY < resized.height)
 					{
-						Color targetCol = Color.clear;
+						Color32 targetCol = Color.clear;
 						int nowCnt = 0;
 						foreach(var col in dic)
 						{
@@ -338,7 +351,7 @@ namespace subjectnerdagreement.psdexport
 								nowCnt = col.Value;
 							}
 						}
-						reColors[resized.width * resizeY + resizeX] = targetCol;
+						reColors[(resized.width * resizeY) + resizeX] = targetCol;
 					}
 					resizeX++;
 				}
@@ -347,7 +360,7 @@ namespace subjectnerdagreement.psdexport
 				resizeY++;
 			}
 
-			resized.SetPixels(reColors);
+			resized.SetPixels32(reColors);
 			resized.Apply();
 			return resized;
 		}

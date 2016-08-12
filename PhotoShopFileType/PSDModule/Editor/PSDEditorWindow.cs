@@ -47,7 +47,7 @@ namespace subjectnerdagreement.psdexport
 			return wnd;
 		}
 
-		[MenuItem("Assets/PSD Importer TS v0.1.0")]
+		[MenuItem("Assets/PSD Importer TS v0.2.0")]
 		static void ImportPsdWindow()
 		{
 			var window = GetPSDEditor();
@@ -399,20 +399,13 @@ namespace subjectnerdagreement.psdexport
 			// Headers
 			using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
 			{
-				float labelSize = (position.width - (colPivot + colSize + colNPOT));
+				float labelSize = (position.width - (colPivot + colSize));
 				labelSize = Mathf.Max(labelSize, 145f);
 
 				using (new EditorGUILayout.HorizontalScope(GUILayout.Width(labelSize)))
 				{
 					//GUILayout.FlexibleSpace();
 					GUILayout.Label("Name");
-					//GUILayout.FlexibleSpace();
-				}
-
-				using (new EditorGUILayout.HorizontalScope(GUILayout.Width(colNPOT)))
-				{
-					//GUILayout.FlexibleSpace();
-					GUILayout.Label("NPOT");
 					//GUILayout.FlexibleSpace();
 				}
 
@@ -593,7 +586,8 @@ namespace subjectnerdagreement.psdexport
 			settings.layerSettings[layerIndex].doExport = fileInfo.LayerVisibility[layerIndex] && parentVisible;
 		}
 
-		private const float colNPOT = 80f;
+		private const float colMosaic = 70f;
+		private const float colNPOT = 70f;
 		private const float colSize = 60f;
 		private const float colPivot = 95f;
 		private const float colVisible = 15f;
@@ -615,7 +609,7 @@ namespace subjectnerdagreement.psdexport
 			float indentAmount = indentLevel*indentSize;
 			GUILayout.Space(indentAmount);
 
-			float labelSize = (position.width - indentAmount - (colPivot + colSize + colNPOT) - 50f);
+			float labelSize = (position.width - indentAmount - (colPivot + colSize + colNPOT + colMosaic) - 50f);
 			labelSize = Mathf.Max(labelSize, 125f);
 
 			// Draw the layer name
@@ -635,7 +629,9 @@ namespace subjectnerdagreement.psdexport
 			layerSetting.doExport = visToggle && parentVisible;
 			if (layerSetting.doExport)
 			{
-				layerSetting.npot = EditorGUILayout.Toggle(layerSetting.npot, GUILayout.Width(colNPOT));
+				layerSetting.scaleByMosaic = EditorGUILayout.ToggleLeft("Mosaic", layerSetting.scaleByMosaic, GUILayout.Width(colNPOT));
+
+				layerSetting.npot = EditorGUILayout.ToggleLeft("NPOT", layerSetting.npot, GUILayout.Width(colMosaic));
 
 				layerSetting.scaleBy = (PSDExporter.ScaleDown)EditorGUILayout.EnumPopup(layerSetting.scaleBy,
 																			GUILayout.Width(colSize));

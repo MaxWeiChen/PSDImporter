@@ -22,6 +22,7 @@ namespace subjectnerdagreement.psdexport
 		private const string TagExportPath = "ExportPath|";
 		private const string TagExportAuto = "ExportAuto";
 		private const string TagNPOT = "NPOT";
+		private const string TagMosaic = "Mosaic";
 
 		/// <summary>
 		/// Defines export settings for each layer
@@ -33,6 +34,7 @@ namespace subjectnerdagreement.psdexport
 			public PSDExporter.ScaleDown scaleBy;
 			public SpriteAlignment pivot;
 			public bool npot;
+			public bool scaleByMosaic;
 		}
 
 		/// <summary>
@@ -251,7 +253,8 @@ namespace subjectnerdagreement.psdexport
 				layerIndex = layerIndex,
 				pivot = Pivot,
 				scaleBy = PSDExporter.ScaleDown.Default,
-				npot = false
+				npot = false,
+				scaleByMosaic = false
 			};
 
 			string layerPath = GetLayerPath(layerName);
@@ -271,6 +274,9 @@ namespace subjectnerdagreement.psdexport
 
 					if (label.Equals(TagNPOT))
 						setting.npot = true;
+
+					if (label.Equals(TagMosaic))
+						setting.scaleByMosaic = true;
 				} // End label loop
 
 				// Anchor is determined by import settings
@@ -313,19 +319,44 @@ namespace subjectnerdagreement.psdexport
 			// layer settings is just import size
 			int lableCnt = 1;
 			if(setting.npot)
+			{
 				lableCnt++;
+			}
+
+			if(setting.scaleByMosaic)
+			{
+				lableCnt++;
+			}
 
 			string[] labels = new string[lableCnt];
-
+			int nowCnt = 0;
 			if (setting.scaleBy == PSDExporter.ScaleDown.Default)
-				labels[0] = TagImport1;
-			if (setting.scaleBy == PSDExporter.ScaleDown.Half)
-				labels[0] = TagImport2;
-			if (setting.scaleBy == PSDExporter.ScaleDown.Quarter)
-				labels[0] = TagImport4;
+			{
+				labels[nowCnt] = TagImport1;
+				nowCnt++;
+			}
+			else if (setting.scaleBy == PSDExporter.ScaleDown.Half)
+			{
+				labels[nowCnt] = TagImport2;
+				nowCnt++;
+			}
+			else if (setting.scaleBy == PSDExporter.ScaleDown.Quarter)
+			{
+				labels[nowCnt] = TagImport4;
+				nowCnt++;
+			}
 			
 			if (setting.npot)
-				labels[1] = TagNPOT;
+			{
+				labels[nowCnt] = TagNPOT;
+				nowCnt++;
+			}
+
+			if(setting.scaleByMosaic)
+			{
+				labels[nowCnt] = TagMosaic;
+				nowCnt++;
+			}
 
 			// Write the label for the texture
 			AssetDatabase.SetLabels(layerSprite, labels);
