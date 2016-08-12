@@ -21,7 +21,7 @@ namespace subjectnerdagreement.psdexport
 		private const string TagImportPack = "ImportPackTag|";
 		private const string TagExportPath = "ExportPath|";
 		private const string TagExportAuto = "ExportAuto";
-		private const string TagCutAlpha = "CutAlpha";
+		private const string TagNPOT = "NPOT";
 
 		/// <summary>
 		/// Defines export settings for each layer
@@ -32,7 +32,7 @@ namespace subjectnerdagreement.psdexport
 			public bool doExport;
 			public PSDExporter.ScaleDown scaleBy;
 			public SpriteAlignment pivot;
-			public bool cutAlpha;
+			public bool npot;
 		}
 
 		/// <summary>
@@ -251,7 +251,7 @@ namespace subjectnerdagreement.psdexport
 				layerIndex = layerIndex,
 				pivot = Pivot,
 				scaleBy = PSDExporter.ScaleDown.Default,
-				cutAlpha = false
+				npot = false
 			};
 
 			string layerPath = GetLayerPath(layerName);
@@ -269,8 +269,8 @@ namespace subjectnerdagreement.psdexport
 					if (label.Equals(TagImport4))
 						setting.scaleBy = PSDExporter.ScaleDown.Quarter;
 
-					if (label.Equals(TagCutAlpha))
-						setting.cutAlpha = true;
+					if (label.Equals(TagNPOT))
+						setting.npot = true;
 				} // End label loop
 
 				// Anchor is determined by import settings
@@ -312,7 +312,7 @@ namespace subjectnerdagreement.psdexport
 			// Write out the labels for the layer settings
 			// layer settings is just import size
 			int lableCnt = 1;
-			if(setting.cutAlpha)
+			if(setting.npot)
 				lableCnt++;
 
 			string[] labels = new string[lableCnt];
@@ -324,8 +324,8 @@ namespace subjectnerdagreement.psdexport
 			if (setting.scaleBy == PSDExporter.ScaleDown.Quarter)
 				labels[0] = TagImport4;
 			
-			if (setting.cutAlpha)
-				labels[1] = TagCutAlpha;
+			if (setting.npot)
+				labels[1] = TagNPOT;
 
 			// Write the label for the texture
 			AssetDatabase.SetLabels(layerSprite, labels);

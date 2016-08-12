@@ -17,6 +17,8 @@ namespace subjectnerdagreement.psdexport
 		/// <returns></returns>
 		bool CanBuild(GameObject hierarchySelection);
 
+		bool reImporter { get; set; }
+
 		/// <summary>
 		/// A factory function for creating a game object.
 		/// Can usually use SpriteConstructor.GOFactory.

@@ -14,6 +14,8 @@ namespace subjectnerdagreement.psdexport
 			return parentCanvas != null;
 		}
 
+		public bool reImporter { get; set; }
+
 		public GameObject CreateGameObject(string name, GameObject parent)
 		{
 			GameObject go = SpriteConstructor.GOFactory(name, parent);

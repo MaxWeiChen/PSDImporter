@@ -399,7 +399,7 @@ namespace subjectnerdagreement.psdexport
 			// Headers
 			using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
 			{
-				float labelSize = (position.width - (colPivot + colSize + colCutAlpha));
+				float labelSize = (position.width - (colPivot + colSize + colNPOT));
 				labelSize = Mathf.Max(labelSize, 145f);
 
 				using (new EditorGUILayout.HorizontalScope(GUILayout.Width(labelSize)))
@@ -409,10 +409,10 @@ namespace subjectnerdagreement.psdexport
 					//GUILayout.FlexibleSpace();
 				}
 
-				using (new EditorGUILayout.HorizontalScope(GUILayout.Width(colCutAlpha)))
+				using (new EditorGUILayout.HorizontalScope(GUILayout.Width(colNPOT)))
 				{
 					//GUILayout.FlexibleSpace();
-					GUILayout.Label("CutAlpha");
+					GUILayout.Label("NPOT");
 					//GUILayout.FlexibleSpace();
 				}
 
@@ -593,7 +593,7 @@ namespace subjectnerdagreement.psdexport
 			settings.layerSettings[layerIndex].doExport = fileInfo.LayerVisibility[layerIndex] && parentVisible;
 		}
 
-		private const float colCutAlpha = 80f;
+		private const float colNPOT = 80f;
 		private const float colSize = 60f;
 		private const float colPivot = 95f;
 		private const float colVisible = 15f;
@@ -615,7 +615,7 @@ namespace subjectnerdagreement.psdexport
 			float indentAmount = indentLevel*indentSize;
 			GUILayout.Space(indentAmount);
 
-			float labelSize = (position.width - indentAmount - (colPivot + colSize + colCutAlpha) - 50f);
+			float labelSize = (position.width - indentAmount - (colPivot + colSize + colNPOT) - 50f);
 			labelSize = Mathf.Max(labelSize, 125f);
 
 			// Draw the layer name
@@ -635,7 +635,7 @@ namespace subjectnerdagreement.psdexport
 			layerSetting.doExport = visToggle && parentVisible;
 			if (layerSetting.doExport)
 			{
-				layerSetting.cutAlpha = EditorGUILayout.Toggle(layerSetting.cutAlpha, GUILayout.Width(colCutAlpha));
+				layerSetting.npot = EditorGUILayout.Toggle(layerSetting.npot, GUILayout.Width(colNPOT));
 
 				layerSetting.scaleBy = (PSDExporter.ScaleDown)EditorGUILayout.EnumPopup(layerSetting.scaleBy,
 																			GUILayout.Width(colSize));
@@ -897,15 +897,19 @@ namespace subjectnerdagreement.psdexport
 
 			using (new EditorGUILayout.HorizontalScope(GUILayout.Height(30f)))
 			{
+				EditorGUILayout.BeginVertical();
 				extIndex = EditorGUILayout.Popup(extLabel, extIndex, constructorNames);
 
 				bool canBuild = false;
 				GUIContent createBtn = GUIContent.none;
 				if (extIndex > -1 && extIndex < constructorExtensions.Length)
 				{
+					IPsdConstructor constructor = constructorExtensions[extIndex];
 					createBtn = constructorNames[extIndex];
-					canBuild = constructorExtensions[extIndex].CanBuild(Selection.activeGameObject);
+					canBuild = constructor.CanBuild(Selection.activeGameObject);
+					constructor.reImporter = EditorGUILayout.Toggle("Re Import Textures", constructor.reImporter);
 				}
+				EditorGUILayout.EndVertical();
 
 				GUI.enabled = canBuild && selectedGroup != null;
 				doCreate = GUILayout.Button(createBtn, GUILayout.ExpandHeight(true));

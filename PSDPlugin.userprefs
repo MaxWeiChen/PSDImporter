@@ -1,6 +1,17 @@
 ﻿<Properties StartupItem="PhotoShopFileType/PhotoShop.csproj">
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="PhotoShopFileType/PSDModule/Editor/PSDExporter.cs">
+    <Files>
+      <File FileName="PhotoShopFileType/PSDModule/Editor/PSDExporter.cs" Line="1" Column="1" />
+      <File FileName="PhotoShopFileType/PSDModule/Editor/Reconstructor/PsdBuilder.cs" Line="1" Column="1" />
+      <File FileName="../Heaven/Heaven/Assets/PSDImporter/Editor/Reconstructor/MapConstructor.cs" Line="1" Column="1" />
+      <File FileName="PhotoShopFileType/PSDModule/Editor/Reconstructor/IPsdConstructor.cs" Line="1" Column="1" />
+      <File FileName="PhotoShopFileType/PSDModule/Editor/Reconstructor/SpriteConstructor.cs" Line="1" Column="1" />
+      <File FileName="PhotoShopFileType/PSDModule/Editor/Reconstructor/UiImgConstructor.cs" Line="1" Column="1" />
+      <File FileName="PhotoShopFileType/PSDModule/Editor/PsdExportSettings.cs" Line="1" Column="1" />
+      <File FileName="PhotoShopFileType/PSDModule/Editor/PSDEditorWindow.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

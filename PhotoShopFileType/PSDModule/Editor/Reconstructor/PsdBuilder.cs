@@ -34,7 +34,7 @@ namespace subjectnerdagreement.psdexport
 									SpriteAlignment align, IPsdConstructor constructor)
 		{
 			// Run the export on non exported layers
-			PSDExporter.Export(settings, fileInfo, false);
+			PSDExporter.Export(settings, fileInfo, constructor.reImporter);
 
 			// Find all the layers being exported
 			var exportLayers = PSDExporter.GetExportLayers(settings, fileInfo);

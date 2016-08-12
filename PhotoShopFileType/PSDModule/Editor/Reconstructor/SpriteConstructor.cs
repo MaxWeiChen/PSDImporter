@@ -33,6 +33,8 @@ namespace subjectnerdagreement.psdexport
 
 		public bool CanBuild(GameObject hierarchySelection) { return true; }
 
+		public bool reImporter { get; set; }
+
 		public GameObject CreateGameObject(string name, GameObject parent)
 		{
 			return GOFactory(name, parent);
